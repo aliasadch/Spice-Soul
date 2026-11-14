@@ -248,13 +248,29 @@ router.post('/reviews', async (req, res) => {
 // --- RESTAURANT STATS ---
 router.get('/stats', requireAdmin, async (req, res) => {
   try {
-    const store = getStore();
-    const totalOrders = store.orders ? store.orders.length : 0;
-    const totalReservations = store.reservations ? store.reservations.length : 0;
-    const reviews = store.reviews || [];
-    const avgRating = reviews.length > 0 
-      ? (reviews.reduce((acc, curr) => acc + (Number(curr.rating) || 5), 0) / reviews.length).toFixed(1)
-      : '4.9';
+    let totalOrders;
+    let totalReservations;
+    let activeMenuCount;
+    let reviews;
+
+    if (isMongoConnected()) {
+      [totalOrders, totalReservations, activeMenuCount, reviews] = await Promise.all([
+        Order.countDocuments(),
+        Reservation.countDocuments(),
+        MenuItem.countDocuments(),
+        Review.find()
+      ]);
+    } else {
+      const store = getStore();
+      totalOrders = store.orders ? store.orders.length : 0;
+      totalReservations = store.reservations ? store.reservations.length : 0;
+      activeMenuCount = store.menu.length;
+      reviews = store.reviews || [];
+    }
+
+    const avgRating = reviews.length > 0
+      ? (reviews.reduce((acc, curr) => acc + (Number(curr.rating) || 0), 0) / reviews.length).toFixed(1)
+      : '0.0';
 
     res.json({
       name: "Spice & Soul",
@@ -263,11 +279,11 @@ router.get('/stats', requireAdmin, async (req, res) => {
       secondaryPhone: "030 9999 8626",
       hours: "12:00 PM - 02:00 AM Daily",
       rating: Number(avgRating),
-      googleReviewsCount: 218 + (reviews.length - 4 > 0 ? reviews.length - 4 : 0),
+      reviewCount: reviews.length,
       priceRange: "Rs 3,000–4,000",
       totalOrders,
       totalReservations,
-      activeMenuCount: store.menu.length
+      activeMenuCount
     });
   } catch (err) {
     res.status(500).json({ error: err.message });

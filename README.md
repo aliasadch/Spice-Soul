@@ -74,7 +74,7 @@ A luxury 3D interactive web platform for **Spice & Soul**, Lahore's premier dini
 ## 🚀 Running the Project
 
 ### Prerequisites
-- Node.js (v18 or newer)
+- Node.js (v20.19+ or v22.12+)
 - npm
 
 ### Quick Start (Both Backend & Frontend)
@@ -97,6 +97,34 @@ are encrypted in transit.
 Visit:
 - **Client Website:** [http://localhost:3000](http://localhost:3000)
 - **Backend API:** [http://localhost:5000/api](http://localhost:5000/api)
+
+---
+
+## 🌐 Public Deployment (Render + MongoDB Atlas)
+
+GitHub stores the source code but does not run the app. This repository includes
+a Render Blueprint for a single web service that builds the React client, serves
+it from Express, and exposes the API on the same domain.
+
+1. Push the project to GitHub and create a MongoDB Atlas database. Create a
+   database user and copy the Atlas connection string.
+2. In Render, choose **New → Blueprint**, connect this repository, and select
+   `render.yaml`.
+3. Enter `MONGODB_URI` and a unique `ADMIN_PASSWORD` when prompted. Render
+   generates `ADMIN_TOKEN_SECRET`; keep all three values private.
+4. Deploy. Render builds both apps and gives the website a public HTTPS URL.
+   The frontend uses the same domain for `/api`; `/health` is the backend health
+   check.
+
+Production startup requires a working `MONGODB_URI`; it will fail rather than
+silently switching to temporary local storage. The database seeds the sample
+menu only when its menu collection is empty. Reviews and customer orders are
+not copied from local `server/data/store.json`.
+
+Before sharing the site publicly, verify the restaurant details and replace any
+sample or unverified menu, ratings, and review claims with accurate business
+information. Render's free web service may sleep when idle, so the first visit
+after inactivity can take longer.
 
 ---
 

@@ -245,8 +245,8 @@ export default function AdminDashboard({ isOpen, onClose }) {
               <p className="text-xl font-extrabold text-emerald-700">{orders.length}</p>
             </div>
             <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200">
-              <p className="text-[10px] text-stone-500 uppercase font-bold">Google Rating</p>
-              <p className="text-xl font-extrabold text-stone-900">{stats.rating} ★ ({stats.googleReviewsCount})</p>
+              <p className="text-[10px] text-stone-500 uppercase font-bold">Customer Rating</p>
+              <p className="text-xl font-extrabold text-stone-900">{stats.rating} ★ ({stats.reviewCount} customer reviews)</p>
             </div>
             <div className="p-3.5 rounded-2xl bg-stone-50 border border-stone-200">
               <p className="text-[10px] text-stone-500 uppercase font-bold">Price Tier</p>

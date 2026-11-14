@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const fs = require('fs');
 const path = require('path');
 const { initialMenuItems, initialReviews, initialReservations } = require('./data/seedData');
+const MenuItem = require('./models/MenuItem');
 
 const STORE_PATH = path.join(__dirname, 'data', 'store.json');
 
@@ -52,16 +53,32 @@ function persistStore() {
 let isMongoConnected = false;
 
 async function connectDB() {
-  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/spice_and_soul';
+  const isProduction = process.env.NODE_ENV === 'production';
+  const uri = process.env.MONGODB_URI || (isProduction ? null : 'mongodb://127.0.0.1:27017/spice_and_soul');
+
+  if (!uri) {
+    throw new Error('MONGODB_URI must be configured in production.');
+  }
+
   try {
     await mongoose.connect(uri, {
-      serverSelectionTimeoutMS: 2000
+      serverSelectionTimeoutMS: isProduction ? 10000 : 2000
     });
     isMongoConnected = true;
-    console.log(`[Database] Connected to MongoDB at ${uri}`);
+    console.log('[Database] Connected to MongoDB.');
   } catch (err) {
     isMongoConnected = false;
+    if (isProduction) {
+      throw err;
+    }
     console.log(`[Database] MongoDB not running locally (${err.message}). Defaulting to High-Performance JSON/Memory Engine!`);
+    return;
+  }
+
+  if (await MenuItem.countDocuments() === 0) {
+    const seedMenuItems = initialMenuItems.map(({ id, ...item }) => item);
+    await MenuItem.insertMany(seedMenuItems);
+    console.log(`[Database] Seeded menu with ${seedMenuItems.length} sample items.`);
   }
 }
 
