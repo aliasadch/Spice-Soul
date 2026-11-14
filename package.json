@@ -1,0 +1,15 @@
+{
+  "name": "spice-and-soul-mern",
+  "version": "1.0.0",
+  "description": "Spice & Soul 3D Restaurant Website - MERN Stack",
+  "scripts": {
+    "start": "node server/server.js",
+    "server": "node server/server.js",
+    "client": "npm --prefix client run dev",
+    "dev": "node ./node_modules/concurrently/dist/bin/concurrently.js \"node server/server.js\" \"npm --prefix client run dev\"",
+    "build": "npm --prefix client run build"
+  },
+  "dependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
